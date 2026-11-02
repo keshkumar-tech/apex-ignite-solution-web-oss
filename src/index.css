@@ -1,0 +1,518 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    /* topbar (~42) + sticky header (~82) + breathing room, so anchored
+       headings land below both instead of underneath the sticky bar */
+    scroll-padding-top: 140px;
+  }
+
+  section[id],
+  div[id],
+  h2[id],
+  h3[id] {
+    scroll-margin-top: 140px;
+  }
+
+  body {
+    @apply bg-surface font-sans text-[16.5px] leading-[1.7] text-ink antialiased;
+    overflow-x: hidden;
+    /* Inter sits on a sub-pixel grid better with optical sizing on; keeps
+       small UI copy crisp instead of muddy. */
+    font-optical-sizing: auto;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Display face: Jost carries the brand shape for headings only, where its
+     wide geometric letterforms read as premium rather than thin. */
+  h1,
+  h2,
+  h3,
+  .text-section-title,
+  .text-page-title,
+  .text-hero-title {
+    font-family: theme("fontFamily.display");
+  }
+
+  /* --- mobile reading rhythm ------------------------------------------
+     Paragraph copy is authored for desktop (leading-[1.8], up to ~75ch).
+     On a phone that column collapses to ~380px, so the same line-height
+     reads as loosely “torn” lines with big gaps between them. Tighten the
+     leading and stop long words from poking past the measure; desktop is
+     left exactly as designed. */
+  @media (max-width: 639px) {
+    body {
+      /* a hair larger + tighter leading = easier to read on a phone */
+      font-size: 16.5px;
+      line-height: 1.66;
+    }
+
+    p,
+    li {
+      line-height: 1.62;
+      text-align: left;
+      hyphens: none;
+      overflow-wrap: break-word;
+    }
+
+    /* extra-tight leading only for the multi-line body paragraphs, so
+       one-line captions and labels keep their rhythm */
+    p.leading-\[1\.8\] {
+      line-height: 1.6;
+    }
+
+    h1,
+    h2,
+    h3 {
+      /* display face at small sizes needs a touch less negative tracking */
+      letter-spacing: -0.012em;
+    }
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold leading-[1.18] tracking-[-0.015em] text-navy;
+  }
+
+  ::selection {
+    @apply bg-accent text-white;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-2;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .section {
+    @apply py-20 sm:py-24;
+  }
+
+  /* ------------------------------- eyebrow ---------------------------- */
+  .eyebrow {
+    @apply mb-4 inline-flex items-center gap-2.5 rounded-full border border-brand/15 bg-white/70 py-1.5 pl-2 pr-3.5 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-brand shadow-soft backdrop-blur sm:text-[0.72rem];
+  }
+
+  .eyebrow::before {
+    content: "";
+    @apply h-1.5 w-1.5 shrink-0 rounded-full bg-accent shadow-[0_0_0_4px_rgba(245,130,53,0.18)] motion-safe:animate-pulseRing;
+  }
+
+  .eyebrow-light {
+    @apply border-white/20 bg-white/10 text-white/90;
+  }
+
+  /* -------------------------------- button ---------------------------- */
+  .btn {
+    @apply relative isolate inline-flex min-h-[52px] items-center justify-center gap-2.5 whitespace-nowrap overflow-hidden rounded-xl border border-transparent px-6 text-[0.95rem] font-semibold tracking-[0.01em] transition-all duration-300 ease-smooth hover:-translate-y-0.5 active:translate-y-0 active:scale-[.985] sm:px-7;
+  }
+
+  .btn svg {
+    @apply h-[17px] w-[17px] shrink-0 transition-transform duration-300 ease-smooth;
+  }
+
+  .btn:hover svg {
+    @apply translate-x-0.5;
+  }
+
+  /* animated sheen that sweeps across the button on hover */
+  .btn::after {
+    content: "";
+    @apply pointer-events-none absolute inset-0 -z-10 -translate-x-full skew-x-[-12deg] bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 transition-opacity duration-200;
+  }
+
+  .btn:hover::after {
+    @apply animate-shine opacity-100;
+  }
+
+  .btn-primary {
+    background-image: linear-gradient(
+      135deg,
+      #ff9448 0%,
+      #f58235 45%,
+      #d96c22 100%
+    );
+    @apply text-white;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.28) inset,
+      0 10px 22px -10px rgba(245, 130, 53, 0.75);
+  }
+
+  .btn-primary:hover {
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.3) inset,
+      0 18px 34px -12px rgba(245, 130, 53, 0.85);
+  }
+
+  .btn-navy {
+    background-image: linear-gradient(
+      135deg,
+      #1b3055 0%,
+      #101d32 55%,
+      #0b1524 100%
+    );
+    @apply text-white;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.12) inset,
+      0 10px 24px -12px rgba(16, 29, 50, 0.75);
+  }
+
+  .btn-navy:hover {
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.16) inset,
+      0 18px 34px -14px rgba(23, 75, 131, 0.8);
+  }
+
+  .btn-outline {
+    @apply border-ink-line bg-white text-navy;
+  }
+
+  .btn-outline:hover {
+    @apply border-brand bg-brand text-white;
+    box-shadow: 0 12px 26px -14px rgba(23, 75, 131, 0.7);
+  }
+
+  .btn-ghost-light {
+    @apply border-white/25 bg-white/10 text-white backdrop-blur;
+  }
+
+  .btn-ghost-light:hover {
+    @apply border-white bg-white text-navy;
+  }
+
+  .btn-sm {
+    @apply min-h-[44px] rounded-lg px-5 text-[0.86rem];
+  }
+
+  /* ------------------------------- link ------------------------------ */
+  .link-arrow {
+    @apply inline-flex items-center gap-2 text-[0.92rem] font-semibold text-brand transition-all duration-300 ease-smooth hover:gap-3 hover:text-accent;
+  }
+
+  .link-arrow svg {
+    @apply h-[15px] w-[15px] transition-transform duration-300 ease-smooth;
+  }
+
+  .link-arrow:hover svg {
+    @apply translate-x-1;
+  }
+
+  /* ------------------------------- cards ----------------------------- */
+  .card-base {
+    @apply rounded-card border border-ink-line bg-white transition-all duration-300 ease-smooth hover:-translate-y-1 hover:border-transparent hover:shadow-hover;
+  }
+
+  /* premium surface: soft gradient + inner highlight */
+  .surface-card {
+    position: relative;
+    @apply overflow-hidden rounded-panel border border-ink-line/80 bg-white shadow-premium transition-all duration-400 ease-smooth;
+  }
+
+  .surface-card::before {
+    content: "";
+    @apply pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-400;
+    background: linear-gradient(
+      160deg,
+      rgba(23, 75, 131, 0.05),
+      transparent 42%
+    );
+  }
+
+  .surface-card:hover {
+    @apply -translate-y-1.5 shadow-hover;
+    border-color: rgba(23, 75, 131, 0.14);
+  }
+
+  .surface-card:hover::before {
+    @apply opacity-100;
+  }
+
+  /* gradient hairline border that lights up on hover */
+  .ring-gradient {
+    position: relative;
+  }
+
+  .ring-gradient::after {
+    content: "";
+    @apply pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-400;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgba(245, 130, 53, 0.6),
+      rgba(23, 75, 131, 0.35),
+      transparent 70%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+  }
+
+  .ring-gradient:hover::after {
+    @apply opacity-100;
+  }
+
+  /* --------------------------------- chips ---------------------------- */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-ink-line bg-white/80 px-3 py-1.5 text-[0.78rem] font-medium text-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand/30 hover:text-brand hover:shadow-soft;
+  }
+
+  .chip-accent {
+    @apply border-accent/25 bg-accent-pale text-accent-dark hover:border-accent/50 hover:text-accent-dark;
+  }
+
+  .prose-site {
+    @apply max-w-[820px];
+  }
+
+  .prose-site p,
+  .prose-site li {
+    @apply text-[0.97rem] leading-[1.8] text-ink-muted;
+  }
+
+  .prose-site h2 {
+    @apply mb-3 mt-8 text-[1.3rem] first:mt-0;
+  }
+
+  .prose-site h3 {
+    @apply mb-2 mt-6 text-[1.05rem];
+  }
+
+  .prose-site a {
+    @apply font-medium text-brand underline underline-offset-2 hover:text-accent;
+  }
+
+  .prose-site strong {
+    @apply text-ink;
+  }
+}
+
+@layer utilities {
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hero-gradient {
+    background:
+      radial-gradient(
+        1100px 560px at 82% 8%,
+        rgba(23, 75, 131, 0.9),
+        transparent 62%
+      ),
+      radial-gradient(
+        900px 600px at 92% 88%,
+        rgba(14, 159, 138, 0.16),
+        transparent 62%
+      ),
+      radial-gradient(
+        760px 520px at 6% 96%,
+        rgba(245, 130, 53, 0.22),
+        transparent 60%
+      ),
+      linear-gradient(160deg, #0a1322 0%, #101d32 45%, #142a47 100%);
+  }
+
+  /* light section with depth instead of flat white */
+  .section-mesh {
+    background-image: theme("backgroundImage.mesh-light");
+    background-color: #f7f9fc;
+  }
+
+  .section-grid {
+    background-image: theme("backgroundImage.grid-slate");
+    background-size: 64px 64px;
+    background-color: #ffffff;
+  }
+
+  .section-navy-mesh {
+    background-image: theme("backgroundImage.mesh-navy");
+    background-color: #101d32;
+  }
+
+  .glass-dark {
+    @apply border border-white/10 bg-white/[0.045] backdrop-blur-md;
+  }
+
+  .glass-light {
+    @apply border border-white/60 bg-white/70 backdrop-blur-md;
+  }
+
+  .banner-gradient {
+    background:
+      radial-gradient(
+        900px 420px at 88% -20%,
+        rgba(23, 75, 131, 0.9),
+        transparent 65%
+      ),
+      linear-gradient(140deg, #0c1729, #101d32 55%, #16304f);
+  }
+
+  .grid-lines {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.14) 1px, transparent 1px);
+    background-size: 72px 72px;
+    -webkit-mask-image: radial-gradient(
+      70% 60% at 30% 30%,
+      #000 20%,
+      transparent 75%
+    );
+    mask-image: radial-gradient(70% 60% at 30% 30%, #000 20%, transparent 75%);
+  }
+
+  .text-gradient-accent {
+    background-image: linear-gradient(100deg, #ffb37a, #f58235 45%, #ffcf9e);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .text-gradient-brand {
+    background-image: linear-gradient(100deg, #174b83, #2b6cb0 55%, #0e9f8a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* masks a long decorative word into a section edge */
+  .fade-edge-x {
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 10%,
+      #000 90%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 10%,
+      #000 90%,
+      transparent
+    );
+  }
+}
+
+/* =====================================================================
+   MOBILE-ONLY READABILITY
+   These live outside @layer so they win over Tailwind utilities (layered
+   rules always lose to unlayered ones). Everything here is scoped to
+   < 640px — desktop typography is untouched.
+   ===================================================================== */
+@media (max-width: 639px) {
+  /* Muted body copy (#687586) is only ~4.4:1 against white, which reads
+     washed-out on a phone in daylight. Darken one step for body text. */
+  .text-ink-muted {
+    color: #55636f;
+  }
+
+  /* Light copy on navy sections: lift it so it stays crisp, not muddy. */
+  .text-white\/75,
+  .text-white\/72,
+  .text-white\/70 {
+    color: rgba(255, 255, 255, 0.84);
+  }
+
+  /* Paragraphs authored with desktop leading feel "torn apart" once the
+     measure collapses to ~380px. Tighten only the multi-line copy. */
+  p.leading-\[1\.8\] {
+    line-height: 1.6;
+  }
+
+  /* Display headings set in Jost need slightly less negative tracking at
+     small sizes, otherwise letters visually collide. */
+  h1,
+  h2 {
+    letter-spacing: -0.012em;
+  }
+
+  /* The fixed contact dock is a thin horizontal row along the bottom edge on
+     phones. Because it is `fixed` it overlays content at every scroll
+     position, not just the page end — so reserve room at the bottom of both
+     the page body and the footer (which sits outside <main>). */
+  main {
+    padding-bottom: 2rem;
+  }
+
+  footer {
+    padding-bottom: 4.5rem;
+  }
+}
+
+/* =====================================================================
+   HERO — responsive reading order
+
+   Phones / tablets (< lg): one stacked column —
+     badge → heading → intro copy → VIDEO → CTAs → stats
+   (the text block, the CTA/stats block and the video block are siblings and
+   are re-ordered with `order`.)
+
+   Desktop / laptop (>= lg): the original two-column hero. The text block
+   (badge + heading + copy + CTAs + stats) is column 1, the video column 2.
+   ===================================================================== */
+@media (max-width: 1023.98px) {
+  /* phones / tablets: video sits between the intro copy and the CTAs */
+  .hero-layout {
+    display: flex;
+    flex-direction: column;
+  }
+
+  [data-hero-text] {
+    order: 1;
+  }
+
+  [data-hero-media] {
+    order: 2;
+  }
+
+  [data-hero-actions] {
+    order: 3;
+  }
+}
+
+/* From lg up the hero returns to its original two-column layout: CTAs and
+   stats sit right under the intro copy inside column 1, the video card is
+   column 2. Only explicit grid placement is used here — no visual change. */
+@media (min-width: 1024px) {
+  [data-hero-text] {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  [data-hero-actions] {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  [data-hero-media] {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+}

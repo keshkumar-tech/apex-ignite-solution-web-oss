@@ -1,0 +1,10 @@
+# Apex Ignite Solutions Pvt. Ltd.
+# https://apexignite.omsoftsolution.net.in/
+
+User-agent: *
+Allow: /
+
+# Legal pages are reachable but need no indexing signal beyond the sitemap
+Disallow: /send-mail.php
+
+Sitemap: https://apexignite.omsoftsolution.net.in/sitemap.xml
