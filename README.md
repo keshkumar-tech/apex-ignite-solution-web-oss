@@ -26,8 +26,6 @@ This repository contains the complete source code for the **Apex Ignite Solution
 
 Every navigation link now points to a real, indexable page. Content is centralised in a single data file, the design system lives entirely in Tailwind config, and the build is optimised for Core Web Vitals (LCP, CLS, INP).
 
-> **Live reference:** [apexignite.omsoftsolution.net.in](https://apexignite.omsoftsolution.net.in/)
-
 ---
 
 ## 🛠️ Technology Stack
